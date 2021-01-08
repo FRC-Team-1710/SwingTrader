@@ -7,17 +7,15 @@ quandl.ApiConfig.api_key = "Ns3nA6dQioYiAy5owmfR"
 data = quandl.get_table('WIKI/PRICES', qopts = { 'columns': ['close'] }, ticker = ['AAPL'], date = { 'gte': '2016-01-01', 'lte': '2016-12-31' })
 i = 0;
 
+#List daily prices throughout 2016
 #while(i <= len(data)-1):
 #    print(data.iloc[i][0])
 #    i += 1
 
-def getRSI(start, end):
+def printRSI(start, end):
     gains = []
     losses = []
-    avgLoss = 0.0
-    avgGain = 0.0
-    print(end-start);
-    x = start
+    x = start - 14
 
     #Get gains and losses from each previous day
     while(x<=end):
@@ -30,18 +28,19 @@ def getRSI(start, end):
             gains.append(c)
         x+=1
     
-    #Get averages
-    for i in range(0,end-start):
-        avgLoss+=losses[i]
-        avgGain+=gains[i]
+    #Calculate Daily RSI
+    for i in range(start,end+1):
+        #Get averages
+        avgLoss = 0.0
+        avgGain = 0.0
+        for j in range(i-14,i):
+            avgGain+=gains[j]
+            avgLoss+=losses[j]
+        avgGain /= 14
+        avgLoss /= 14
 
-    avgLoss = avgLoss/(end-start)
-    avgGain = avgGain/(end-start)
-    print(avgLoss)
-    print(avgGain)
-
-    #Calculate & return RSI
-    RSI = 100-(100/(1+avgGain/avgLoss))
-    return RSI
-
-print(getRSI(1,100))
+        #Calculate & print RSI
+        RSI = 100-(100/(1+avgGain/avgLoss))
+        print("Day" + str(i) + ": " + str(RSI))
+        
+printRSI(15,28)
